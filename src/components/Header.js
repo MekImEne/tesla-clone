@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-//import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon from "@material-ui/icons/Close";
+import { selectCars } from "../features/car/carSlice";
+import { useSelector } from "react-redux";
 
 const menuItems = [
   { title: "Existing Inventory", href: "/" },
@@ -21,18 +23,19 @@ const menuItems = [
 
 function Header() {
   const [burgerStatus, setBurgerStatus] = useState(false);
+  const cars = useSelector(selectCars);
   return (
     <Container>
       <a href="/">
         <img src="/images/logo.svg" alt="TESLA" />
       </a>
       <Menu>
-        <a href="/">Model S</a>
-        <a href="/">Model X</a>
-        <a href="/">Model 3</a>
-        <a href="/">Model Y</a>
-        <a href="/">Solar Panel</a>
-        <a href="/">Solar Roof</a>
+        {cars &&
+          cars.map((car, index) => (
+            <a key={index} href="/">
+              {car}
+            </a>
+          ))}
       </Menu>
 
       <RightMenu>
@@ -43,15 +46,20 @@ function Header() {
 
       <BurgerNav show={burgerStatus}>
         <CloseWrapper>
-          {/* <CustomClose /> */}
-          <p onClick={() => setBurgerStatus(false)}>X</p>
+          <CustomClose onClick={() => setBurgerStatus(false)} />
         </CloseWrapper>
-
-        {menuItems.map((item, index) => (
-          <li key={index}>
-            <a href={item.href}> {item.title} </a>
-          </li>
-        ))}
+        {cars &&
+          cars.map((car, index) => (
+            <li key={index}>
+              <a href="/">{car}</a>
+            </li>
+          ))}
+        {menuItems &&
+          menuItems.map((item, index) => (
+            <li key={index}>
+              <a href={item.href}> {item.title} </a>
+            </li>
+          ))}
       </BurgerNav>
     </Container>
   );
@@ -120,6 +128,7 @@ const BurgerNav = styled.div`
   text-align: start;
   transform: ${(props) => (props.show ? "translateX(0)" : "translateX(100%)")};
   transition: transform 0.5s;
+  overflow-y: scroll;
 
   li {
     padding: 15px;
@@ -140,4 +149,4 @@ const CloseWrapper = styled.div`
   }
 `;
 
-// const CustomClose = styled(CloseIcon)``;
+const CustomClose = styled(CloseIcon)``;
